@@ -17,7 +17,6 @@
         lsocket=null}).
 
 start(Port, Loop) ->
-    io:format("SERVER TCP!"),
     State = #server_state{port = Port, loop = Loop},
     gen_server:start_link({local, ?MODULE}, ?MODULE, State, []).
 

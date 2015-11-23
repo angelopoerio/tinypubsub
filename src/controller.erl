@@ -12,7 +12,7 @@
 init([]) -> {ok, [dict:new(), dict:new()]}.
 
 %% start the process
-start_link() -> io:format("Avviato!"), gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
+start_link() -> gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 %% api
 publish(Key, Value) -> gen_server:call(?MODULE, {publish, Key, Value}).
