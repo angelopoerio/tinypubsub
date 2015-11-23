@@ -6,7 +6,7 @@
 
 -export([init/1, code_change/3, handle_call/3, handle_cast/2, handle_info/2, terminate/2]).
 -export([accept_loop/1]).
--export([start/3]).
+-export([start/2]).
 
 -define(TCP_OPTIONS, [binary, {packet, 0}, {active, false}, {reuseaddr, true}]).
 
@@ -16,9 +16,10 @@
         ip=any,
         lsocket=null}).
 
-start(Name, Port, Loop) ->
+start(Port, Loop) ->
+    io:format("SERVER TCP!"),
     State = #server_state{port = Port, loop = Loop},
-    gen_server:start_link({local, Name}, ?MODULE, State, []).
+    gen_server:start_link({local, ?MODULE}, ?MODULE, State, []).
 
 init(State = #server_state{port=Port}) ->
     case gen_tcp:listen(Port, ?TCP_OPTIONS) of

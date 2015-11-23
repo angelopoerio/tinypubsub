@@ -6,7 +6,7 @@
 
 start(Port) ->
     controller:start_link(),
-    tcp_server:start(?MODULE, Port, {?MODULE, loop}).
+    tcp_server:start(Port, {?MODULE, loop}).
 
 loop(Socket) ->
     case gen_tcp:recv(Socket, 0) of
