@@ -40,7 +40,10 @@ handle_call({publish, Key, Value}, _From, D) ->
 handle_call({subscribe, Socket, Key}, _From, D) ->
 	K_V_dict = lists:nth(1, D),
 	Pub_Sub_dict = lists:nth(2, D),
-    {reply, ok, [K_V_dict, dict:append(Key, Socket, Pub_Sub_dict)]};
+	case dict:is_key(Key, K_V_dict) of
+		true -> {reply, ok, [K_V_dict, dict:append(Key, Socket, Pub_Sub_dict)]};
+		_ -> gen_tcp:send(Socket, "Can't subscribe to a not existing key\n"), {reply, ok, [K_V_dict, Pub_Sub_dict]}
+	end;
 
 handle_call({unsubscribe, Socket, Key}, _From, D) ->
 	K_V_dict = lists:nth(1, D),
