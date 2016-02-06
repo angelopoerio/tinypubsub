@@ -21,7 +21,7 @@ subscribe(Socket, Key) -> gen_server:call(?MODULE, {subscribe, Socket, Key}).
 
 unsubscribe(Socket, Key) -> gen_server:call(?MODULE, {unsubscribe, Socket, Key}).
 
-%% utility function to notify subscribers of the changed value
+%% utility function (process) to notify subscribers of the changed value
 notify_change(K_V_dict, Pub_Sub_dict, Key, New_val) -> 
 	case dict:is_key(Key, K_V_dict) of
 		true -> Send_n = fun(Socket) -> gen_tcp:send(Socket, "CNGD " ++ Key ++ " " ++ New_val ++ " " ++ " \n") end,
@@ -42,14 +42,16 @@ handle_call({subscribe, Socket, Key}, _From, D) ->
 	Pub_Sub_dict = lists:nth(2, D),
 	case dict:is_key(Key, K_V_dict) of
 		true -> {reply, ok, [K_V_dict, dict:append(Key, Socket, Pub_Sub_dict)]};
-		_ -> gen_tcp:send(Socket, "Can't subscribe to a not existing key\n"), {reply, ok, [K_V_dict, Pub_Sub_dict]}
+		_    -> gen_tcp:send(Socket, "Can't subscribe to a not existing key\n"), {reply, ok, [K_V_dict, Pub_Sub_dict]}
 	end;
 
 handle_call({unsubscribe, Socket, Key}, _From, D) ->
 	K_V_dict = lists:nth(1, D),
 	Pub_Sub_dict = lists:nth(2, D),
-	Subscribers = dict:fetch(Key, Pub_Sub_dict), 
-    {reply, ok, [K_V_dict, dict:store(Key, lists:delete(Socket, Subscribers), Pub_Sub_dict)]}.
+	case dict:is_key(Key, Pub_Sub_dict) of
+		true -> Subscribers = dict:fetch(Key, Pub_Sub_dict), {reply, ok, [K_V_dict, dict:store(Key, lists:delete(Socket, Subscribers), Pub_Sub_dict)]};
+    	_    -> gen_tcp:send(Socket, "Can't unsubscribe to a not existing key\n"), {reply, ok, [K_V_dict, Pub_Sub_dict]}
+    end.
 
 handle_cast(_Msg, N) ->
   {noreply, N}.
