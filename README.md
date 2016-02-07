@@ -1,8 +1,8 @@
-# mystorage
+# tinypubsub
 In memory pub/sub service written in Erlang/OTP
 
-# How to build
-Just run: ./compile.sh
+# How to build & run
+Just run: ./compile.sh;./start.sh
 
 # Supported commands
 
