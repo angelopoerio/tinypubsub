@@ -10,7 +10,7 @@ start_link() ->
 init([]) ->
 	 	Controller_proc = {controller, {controller, start_link, []}, 
 	 		permanent, 2000, worker, [controller]},
-        Tcp_server_proc = {pub_sub, {pub_sub, start, [3000]},
+        Tcp_server_proc = {pub_sub, {pub_sub, start, [4444]},
            permanent, 2000, worker, [pub_sub]},
   		{ok, {{one_for_one, 1, 1}, [Controller_proc, Tcp_server_proc]}}.
 
